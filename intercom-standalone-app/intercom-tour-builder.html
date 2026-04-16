@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WPP Open Platform - Tour Builder</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f5f5f5;
+    }
+    .header {
+      background: #fff;
+      padding: 16px 24px;
+      border-bottom: 1px solid #e0e0e0;
+      display: flex;
+      align-items: center;
+      gap: 24px;
+    }
+    .nav-item {
+      padding: 8px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .nav-item.active {
+      background: #e3f2fd;
+      color: #1976d2;
+    }
+    .container {
+      padding: 24px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .card {
+      background: #fff;
+      border-radius: 8px;
+      padding: 24px;
+      margin-bottom: 16px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    h1 {
+      margin: 0 0 8px 0;
+      font-size: 24px;
+    }
+    h3 {
+      margin: 0 0 12px 0;
+      font-size: 18px;
+    }
+    p {
+      margin: 0 0 16px 0;
+      color: #666;
+    }
+    .user-details {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 16px;
+      background: #f9f9f9;
+      border-radius: 8px;
+    }
+    .avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: #1976d2;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+    }
+    button {
+      padding: 8px 16px;
+      border: 1px solid #1976d2;
+      background: #fff;
+      color: #1976d2;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #e3f2fd;
+    }
+  </style>
+</head>
+<body>
+  <!-- Header with navigation -->
+  <div class="header" data-intercom-target="app-header-navigation">
+    <div class="nav-item">Welcome</div>
+    <div class="nav-item active">Intercom Test</div>
+    <div class="nav-item">Workspaces</div>
+  </div>
+
+  <div class="container">
+    <!-- Page title -->
+    <div class="card">
+      <h1 data-intercom-target="intercom-page-title">Intercom Test Page</h1>
+      <p data-intercom-target="intercom-page-description">Test Intercom guided tours by loading the script and triggering tours with custom tour IDs.</p>
+    </div>
+
+    <!-- Intercom test component -->
+    <div data-intercom-target="intercom-test-component">
+      <div class="card" data-intercom-target="intercom-test-container">
+        <h3 data-intercom-target="intercom-test-title">Intercom Test Component</h3>
+        <p data-intercom-target="intercom-test-status">Status: ✅ Ready</p>
+        <div style="margin-bottom: 15px;" data-intercom-target="intercom-tour-id-input">
+          <label for="tourId" style="margin-right: 10px;">Tour ID:</label>
+          <input id="tourId" type="number" value="21407" style="padding: 8px; border-radius: 4px; border: 1px solid #ccc; width: 100px;" />
+        </div>
+        <button onclick="startTour()" data-intercom-target="intercom-start-tour-button" style="padding: 10px 20px; background: #26c647; color: white; border: none; border-radius: 4px; cursor: pointer;">
+          Start Tour
+        </button>
+      </div>
+    </div>
+
+    <!-- User details section -->
+    <div class="card">
+      <h3>User Details</h3>
+      <div class="user-details" data-intercom-target="user-details-section">
+        <div class="avatar">JD</div>
+        <div>
+          <div>John Doe</div>
+          <div style="color: #666;">john.doe@wpp.com</div>
+        </div>
+        <button data-intercom-target="copy-auth-token">Copy Auth Token</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Get query parameters
+    const params = new URLSearchParams(window.location.search);
+    const standaloneIntercomBoot = params.get('standaloneIntercomBoot') === 'true';
+    const appId = params.get('appId') || 'j9rgik9b';
+    const apiBase = params.get('apiBase') || 'https://api-iam.eu.intercom.io';
+    const email = params.get('email') || 'test@wpp.com';
+    const userId = params.get('userId') || 'test-user-poc-123';
+    const name = params.get('name') || 'Test User';
+
+    if (standaloneIntercomBoot) {
+      console.log('Booting Intercom with config:', { appId, apiBase, email, userId, name });
+
+      const scriptUrl = `https://widget.intercom.io/widget/${appId}`;
+      const script = document.createElement('script');
+      script.src = scriptUrl;
+      script.async = true;
+      script.onload = () => {
+        console.log('Intercom script loaded, booting...');
+        window.Intercom('boot', {
+          app_id: appId,
+          api_base: apiBase,
+          hide_default_launcher: true,
+          hide_notifications: true,
+          name,
+          email,
+          user_id: userId,
+        });
+        window.Intercom('update');
+        console.log('Intercom ready for tour building');
+      };
+      script.onerror = () => {
+        console.error('Failed to load Intercom script');
+      };
+      document.head.appendChild(script);
+    }
+
+    function startTour() {
+      const tourId = document.getElementById('tourId').value;
+      console.log('Starting tour:', tourId);
+      window.Intercom?.('startTour', tourId);
+    }
+  </script>
+</body>
+</html>
