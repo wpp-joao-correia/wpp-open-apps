@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Intercom Standalone Test</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 50px auto;
+      padding: 20px;
+    }
+    .test-container {
+      padding: 20px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      margin: 20px 0;
+    }
+    button {
+      padding: 10px 20px;
+      background-color: #26c647;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    button:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
+    }
+    input {
+      padding: 8px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+      width: 100px;
+    }
+    label {
+      margin-right: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Intercom Standalone Test</h1>
+  <p>This is a standalone HTML page to test Intercom tours outside the WPP Open Platform iframe context.</p>
+  
+  <div class="test-container" data-intercom-target="intercom-test-container">
+    <h3 data-intercom-target="intercom-test-title">Intercom Test Component</h3>
+    <p data-intercom-target="intercom-test-status">Status: <span id="status">⏳ Loading...</span></p>
+    <div style="margin-bottom: 15px;" data-intercom-target="intercom-tour-id-input">
+      <label for="tourId">Tour ID:</label>
+      <input id="tourId" type="number" value="21407" />
+    </div>
+    <button id="startTourBtn" onclick="startTour()" disabled data-intercom-target="intercom-start-tour-button">
+      Start Tour
+    </button>
+  </div>
+
+  <script>
+    const INTERCOM_APP_ID = 'j9rgik9b';
+    const INTERCOM_API_BASE = 'https://api-iam.eu.intercom.io';
+    const INTERCOM_SCRIPT_URL = `https://widget.intercom.io/widget/${INTERCOM_APP_ID}`;
+
+    function bootIntercom() {
+      console.log('Intercom script loaded, booting...');
+      console.log('Window.Intercom before boot:', window.Intercom);
+      
+      window.Intercom('boot', {
+        app_id: INTERCOM_APP_ID,
+        api_base: INTERCOM_API_BASE,
+        hide_default_launcher: false,
+        hide_notifications: false,
+      });
+      
+      console.log('Window.Intercom after boot:', window.Intercom);
+      window.Intercom('update');
+      
+      // Wait for Intercom to be fully ready
+      setTimeout(() => {
+        document.getElementById('status').textContent = '✅ Loaded';
+        document.getElementById('startTourBtn').disabled = false;
+        console.log('Intercom marked as ready');
+      }, 2000);
+    }
+
+    function startTour() {
+      const tourId = document.getElementById('tourId').value;
+      console.log('Starting Intercom tour with ID:', tourId);
+      console.log('Window.Intercom available:', !!window.Intercom);
+      console.log('Window.Intercom methods:', window.Intercom ? Object.keys(window.Intercom) : 'N/A');
+      window.Intercom('startTour', tourId);
+    }
+
+    // Load Intercom script
+    const existingScript = document.querySelector(`script[src="${INTERCOM_SCRIPT_URL}"]`);
+    
+    if (!existingScript) {
+      const script = document.createElement('script');
+      script.src = INTERCOM_SCRIPT_URL;
+      script.async = true;
+      script.onload = bootIntercom;
+      script.onerror = () => {
+        console.error('Failed to load Intercom script');
+        document.getElementById('status').textContent = '❌ Failed to load';
+      };
+      document.head.appendChild(script);
+      console.log('Script element appended to head');
+    } else {
+      console.log('Script already exists, checking if booted...');
+      const isBooted = window.Intercom('booted');
+      console.log('Intercom booted:', isBooted);
+      if (isBooted) {
+        document.getElementById('status').textContent = '✅ Already loaded';
+        document.getElementById('startTourBtn').disabled = false;
+      } else {
+        bootIntercom();
+      }
+    }
+  </script>
+</body>
+</html>
