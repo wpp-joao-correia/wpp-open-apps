@@ -1,0 +1,12 @@
+{
+  "files": {
+    "main.js": "/main.js",
+    "static/js/node_modules_stencil_core_internal_client_shadow-css_js.a7f578da.chunk.js": "/static/js/node_modules_stencil_core_internal_client_shadow-css_js.a7f578da.chunk.js",
+    "static/media/logo.svg": "/static/media/logo.7de06b705e3aef79006b056b40a4b30d.svg",
+    "main.js.map": "/main.js.map",
+    "node_modules_stencil_core_internal_client_shadow-css_js.a7f578da.chunk.js.map": "/static/js/node_modules_stencil_core_internal_client_shadow-css_js.a7f578da.chunk.js.map"
+  },
+  "entrypoints": [
+    "main.js"
+  ]
+}
